@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./actions";
@@ -15,6 +16,28 @@ export default async function AppLayout({
   // Defense in depth — proxy.ts already redirects, but verify here too.
   if (!user) {
     redirect("/sign-in");
+  }
+
+  // Redirect to onboarding if not completed (except when already on it).
+  const headerStore = await headers();
+  const pathname = headerStore.get("x-pathname") ?? "";
+  const isOnboarding = pathname.includes("/app/onboarding");
+
+  if (!isOnboarding) {
+    const { data: profile } = await supabase
+      .from("users")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.onboarding_completed) {
+      redirect("/app/onboarding");
+    }
+  }
+
+  // Onboarding has its own minimal layout — no sidebar.
+  if (isOnboarding) {
+    return <>{children}</>;
   }
 
   const t = await getTranslations("nav");

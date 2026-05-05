@@ -8,7 +8,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { users } from "./users.js";
+import { users } from "./users";
 
 /**
  * Saved chat conversations between user and the AI financial advisor.

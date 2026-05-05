@@ -8,7 +8,7 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { subscriptionPlanEnum, householdRoleEnum, invitationChannelEnum, invitationStatusEnum, localeEnum } from "./enums.js";
+import { subscriptionPlanEnum, householdRoleEnum, invitationChannelEnum, invitationStatusEnum, localeEnum } from "./enums";
 
 /**
  * Users — mirrors auth.users from Supabase.
@@ -37,7 +37,7 @@ export const users = pgTable("users", {
 export const households = pgTable("households", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull().default("Personal"),
-  ownerId: uuid("owner_id").notNull().references(() => users.id),
+  ownerId: uuid("owner_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   subscriptionPlan: subscriptionPlanEnum("subscription_plan").notNull().default("free"),
   maxMembers: integer("max_members").notNull().default(1),
   baseCurrency: varchar("base_currency", { length: 3 }).notNull().default("USD"),
@@ -62,7 +62,7 @@ export const householdMembers = pgTable("household_members", {
 export const householdInvitations = pgTable("household_invitations", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   householdId: uuid("household_id").notNull().references(() => households.id, { onDelete: "cascade" }),
-  invitedByUserId: uuid("invited_by_user_id").notNull().references(() => users.id),
+  invitedByUserId: uuid("invited_by_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   channel: invitationChannelEnum("channel").notNull(),
   invitedEmail: text("invited_email"),
   invitedWhatsapp: text("invited_whatsapp"), // E.164

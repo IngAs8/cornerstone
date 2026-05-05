@@ -8,9 +8,9 @@ import {
   unique,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { budgetMethodologyEnum } from "./enums.js";
-import { households } from "./users.js";
-import { categories } from "./transactions.js";
+import { budgetMethodologyEnum } from "./enums";
+import { households } from "./users";
+import { categories } from "./transactions";
 
 /**
  * Monthly budgets per household.

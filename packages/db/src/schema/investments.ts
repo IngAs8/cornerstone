@@ -9,8 +9,8 @@ import {
   date,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { investmentTypeEnum } from "./enums.js";
-import { households } from "./users.js";
+import { investmentTypeEnum } from "./enums";
+import { households } from "./users";
 
 /**
  * A logical grouping of assets (e.g., "Crypto Portfolio", "Retirement").

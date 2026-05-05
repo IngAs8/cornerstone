@@ -1,4 +1,4 @@
-import type { CategoryExpense } from "./types.js";
+import type { CategoryExpense } from "./types";
 
 export interface BudgetHealth {
   needs: BucketStatus;

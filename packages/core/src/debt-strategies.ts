@@ -1,4 +1,4 @@
-import type { Debt } from "./types.js";
+import type { Debt } from "./types";
 
 export interface PayoffStep {
   month: number;

@@ -3,7 +3,7 @@ import {
   calculateAmortizationTable,
   totalInterestPaid,
   totalAmountPaid,
-} from "./amortization.js";
+} from "./amortization";
 
 describe("calculateAmortizationTable", () => {
   it("calculates a simple fixed-rate loan correctly", () => {

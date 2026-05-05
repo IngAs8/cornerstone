@@ -1,4 +1,4 @@
-import type { PaymentRow, RateScheduleEntry } from "./types.js";
+import type { PaymentRow, RateScheduleEntry } from "./types";
 
 /**
  * Calculate amortization table for a loan.

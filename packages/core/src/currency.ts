@@ -1,4 +1,4 @@
-import type { Currency, ExchangeRate } from "./types.js";
+import type { Currency, ExchangeRate } from "./types";
 
 /**
  * Convert an amount from one currency to another using provided exchange rates.

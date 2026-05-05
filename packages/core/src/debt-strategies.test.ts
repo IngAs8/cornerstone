@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { avalanche, snowball, compareStrategies } from "./debt-strategies.js";
-import type { Debt } from "./types.js";
+import { avalanche, snowball, compareStrategies } from "./debt-strategies";
+import type { Debt } from "./types";
 
 const sampleDebts: Debt[] = [
   {

@@ -9,8 +9,8 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { transactionTypeEnum, transactionSourceEnum, categoryTypeEnum } from "./enums.js";
-import { households, users } from "./users.js";
+import { transactionTypeEnum, transactionSourceEnum, categoryTypeEnum } from "./enums";
+import { households, users } from "./users";
 
 /**
  * Categories — both system-default and household-custom.
@@ -38,7 +38,7 @@ export const transactions = pgTable(
   {
     id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
     householdId: uuid("household_id").notNull().references(() => households.id, { onDelete: "cascade" }),
-    userId: uuid("user_id").notNull().references(() => users.id),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
     type: transactionTypeEnum("type").notNull(),
     amount: numeric("amount", { precision: 19, scale: 4 }).notNull(),
     currency: varchar("currency", { length: 3 }).notNull(),

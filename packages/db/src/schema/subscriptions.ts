@@ -1,7 +1,7 @@
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { subscriptionPlanEnum, subscriptionStatusEnum } from "./enums.js";
-import { households } from "./users.js";
+import { subscriptionPlanEnum, subscriptionStatusEnum } from "./enums";
+import { households } from "./users";
 
 /**
  * Stripe subscription state per household.

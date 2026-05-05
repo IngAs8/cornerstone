@@ -1,5 +1,5 @@
-import type { Asset, Currency, ExchangeRate, PriceData } from "./types.js";
-import { convert } from "./currency.js";
+import type { Asset, Currency, ExchangeRate, PriceData } from "./types";
+import { convert } from "./currency";
 
 export interface AssetMetrics {
   symbol: string;

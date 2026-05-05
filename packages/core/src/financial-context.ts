@@ -1,4 +1,4 @@
-import type { Currency, Debt } from "./types.js";
+import type { Currency, Debt } from "./types";
 
 /**
  * Aggregated financial state of a user — used as context for the AI advisor.

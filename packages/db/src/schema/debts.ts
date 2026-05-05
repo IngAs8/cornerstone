@@ -11,8 +11,8 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { debtTypeEnum, rateTypeEnum, paymentFrequencyEnum } from "./enums.js";
-import { households } from "./users.js";
+import { debtTypeEnum, rateTypeEnum, paymentFrequencyEnum } from "./enums";
+import { households } from "./users";
 
 /**
  * Debts — short or long term liabilities.
