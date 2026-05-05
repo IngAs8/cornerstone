@@ -1,0 +1,45 @@
+{
+  "app": {
+    "name": "Cornerstone Capital",
+    "tagline": "Construye tu riqueza sobre una base sólida"
+  },
+  "nav": {
+    "dashboard": "Inicio",
+    "transactions": "Transacciones",
+    "budget": "Presupuesto",
+    "debts": "Deudas",
+    "investments": "Inversiones",
+    "advisor": "Asesor IA",
+    "household": "Familia",
+    "settings": "Ajustes",
+    "signOut": "Cerrar sesión"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "fullName": "Nombre completo",
+    "submitSignIn": "Iniciar sesión",
+    "submitSignUp": "Crear cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "createOne": "Crear una",
+    "signInLink": "Iniciar sesión",
+    "errorInvalid": "Correo o contraseña inválidos",
+    "errorGeneric": "Algo salió mal. Por favor intenta de nuevo."
+  },
+  "dashboard": {
+    "welcome": "Bienvenido de nuevo, {name}",
+    "netWorth": "Patrimonio neto",
+    "monthlyIncome": "Ingresos mensuales",
+    "monthlyExpenses": "Gastos mensuales",
+    "remaining": "Disponible"
+  },
+  "marketing": {
+    "ctaPrimary": "Comienza gratis",
+    "ctaSecondary": "Ver cómo funciona",
+    "heroTitle": "Toma el control de tu dinero",
+    "heroSubtitle": "Presupuesto, eliminación de deudas, inversiones y un asesor IA que conoce tu contexto financiero completo."
+  }
+}
