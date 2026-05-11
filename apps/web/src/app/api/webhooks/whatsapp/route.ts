@@ -86,7 +86,8 @@ export async function POST(req: NextRequest) {
   let parsed: ParsedExpense | null = null;
   try {
     parsed = await parseExpenseWithClaude(text, user.base_currency ?? "USD", categoryList);
-  } catch {
+  } catch (err) {
+    console.error("[WhatsApp] Claude parse error:", err);
     await sendWhatsAppMessage(fromNumber, "No pude entender ese mensaje. Intenta con: \"Gasté $12 en almuerzo\"");
     return NextResponse.json({ ok: true });
   }
