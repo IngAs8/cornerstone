@@ -47,6 +47,7 @@ export default async function AppLayout({
     { href: "/app/dashboard", label: t("dashboard") },
     { href: "/app/transactions", label: t("transactions") },
     { href: "/app/budget", label: t("budget") },
+    { href: "/app/accounts", label: t("accounts") },
     { href: "/app/debts", label: t("debts") },
     { href: "/app/investments", label: t("investments") },
     { href: "/app/advisor", label: t("advisor") },
