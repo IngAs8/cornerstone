@@ -19,7 +19,6 @@ export default async function NewTransactionPage() {
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name, type, bucket")
-    .or(`household_id.is.null,household_id.eq.(${user.id})`)
     .order("type", { ascending: true })
     .order("sort_order", { ascending: true });
 

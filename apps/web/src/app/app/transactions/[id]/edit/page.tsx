@@ -44,7 +44,6 @@ export default async function EditTransactionPage({ params }: EditPageProps) {
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name, type, bucket")
-    .or(`household_id.is.null,household_id.eq.(${user.id})`)
     .order("type")
     .order("sort_order");
 
