@@ -6,9 +6,9 @@ import { BudgetItemRow } from "./budget-item-row";
 type Bucket = "needs" | "wants" | "savings";
 const BUCKETS: Bucket[] = ["needs", "wants", "savings"];
 const BUCKET_LABEL: Record<Bucket, string> = {
-  needs: "Needs",
-  wants: "Wants",
-  savings: "Savings",
+  needs: "Necesidades",
+  wants: "Deseos",
+  savings: "Ahorros",
 };
 
 interface BudgetItemDB {
@@ -137,19 +137,19 @@ export default async function BudgetPage() {
     <main className="flex-1 px-8 py-10 max-w-3xl mx-auto w-full">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Budget</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Presupuesto</h1>
           <p className="text-foreground/60 text-sm mt-0.5">
             {budget
               ? formatRelativeMonth(budget.month)
-              : "No budget set for this month"}
+              : "Sin presupuesto este mes"}
           </p>
         </div>
       </div>
 
       {!budget ? (
         <div className="text-center py-20 text-foreground/50">
-          <p className="text-lg font-medium mb-2">No budget this month</p>
-          <p className="text-sm">Go through onboarding to create your first budget.</p>
+          <p className="text-lg font-medium mb-2">Sin presupuesto este mes</p>
+          <p className="text-sm">Completa el onboarding para crear tu primer presupuesto.</p>
         </div>
       ) : (
         <>
@@ -157,7 +157,7 @@ export default async function BudgetPage() {
           <div className="grid grid-cols-3 gap-3 mb-8">
             <div className="rounded-lg border border-foreground/10 p-4">
               <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">
-                Expected Income
+                Ingreso esperado
               </p>
               <p className="text-xl font-semibold text-emerald-400">
                 {formatMoney(expectedIncome, currency)}
@@ -165,7 +165,7 @@ export default async function BudgetPage() {
             </div>
             <div className="rounded-lg border border-foreground/10 p-4">
               <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">
-                Total Allocated
+                Total asignado
               </p>
               <p className="text-xl font-semibold">
                 {formatMoney(totalAllocated, currency)}
@@ -173,7 +173,7 @@ export default async function BudgetPage() {
             </div>
             <div className="rounded-lg border border-foreground/10 p-4">
               <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">
-                Unallocated
+                Sin asignar
               </p>
               <p
                 className={`text-xl font-semibold ${
@@ -187,10 +187,10 @@ export default async function BudgetPage() {
 
           {/* Legend */}
           <div className="flex items-center gap-4 mb-4 text-xs text-foreground/40">
-            <span>Category</span>
+            <span>Categoría</span>
             <div className="ml-auto flex gap-6">
-              <span>Allocated</span>
-              <span>Spent</span>
+              <span>Asignado</span>
+              <span>Gastado</span>
             </div>
           </div>
 
@@ -241,7 +241,7 @@ export default async function BudgetPage() {
                     <BudgetItemRow
                       key={item.id}
                       id={item.id}
-                      categoryName={item.categories?.name ?? "Unknown"}
+                      categoryName={item.categories?.name ?? "Sin categoría"}
                       categoryColor={item.categories?.color ?? null}
                       allocated={Number(item.allocated_amount)}
                       spent={spendingMap.get(item.category_id) ?? 0}
@@ -256,9 +256,9 @@ export default async function BudgetPage() {
           {/* Methodology note */}
           {budget.methodology !== "custom" && (
             <p className="text-xs text-foreground/30 text-center mt-4">
-              Budget based on{" "}
-              {budget.methodology === "50_30_20" ? "50/30/20" : "70/20/10"} methodology ·
-              Click any amount to edit
+              Presupuesto basado en metodología{" "}
+              {budget.methodology === "50_30_20" ? "50/30/20" : "70/20/10"} ·
+              Clic en cualquier monto para editar
             </p>
           )}
         </>

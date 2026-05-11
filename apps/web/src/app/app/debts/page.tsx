@@ -8,14 +8,14 @@ import { CloseDebtButton } from "./close-debt-button";
 import type { Debt } from "@cornerstone/core";
 
 const DEBT_TYPE_LABEL: Record<string, string> = {
-  credit_card: "Credit Card",
-  personal_loan: "Personal Loan",
-  mortgage: "Mortgage",
-  auto_loan: "Auto Loan",
-  student_loan: "Student Loan",
-  short_term: "Short-term",
-  long_term: "Long-term",
-  other: "Other",
+  credit_card: "Tarjeta de crédito",
+  personal_loan: "Préstamo personal",
+  mortgage: "Hipoteca",
+  auto_loan: "Préstamo auto",
+  student_loan: "Préstamo estudiantil",
+  short_term: "Corto plazo",
+  long_term: "Largo plazo",
+  other: "Otro",
 };
 
 export default async function DebtsPage() {
@@ -68,22 +68,22 @@ export default async function DebtsPage() {
     <main className="flex-1 px-8 py-10 max-w-3xl mx-auto w-full">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Debts</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Deudas</h1>
           <p className="text-foreground/60 text-sm mt-0.5">
-            Track and eliminate your liabilities.
+            Rastrea y elimina tus deudas.
           </p>
         </div>
         <Link href="/app/debts/new">
-          <Button>+ Add debt</Button>
+          <Button>+ Agregar deuda</Button>
         </Link>
       </div>
 
       {debts.length === 0 ? (
         <div className="text-center py-20 text-foreground/50">
-          <p className="text-lg font-medium mb-2">No active debts</p>
-          <p className="text-sm mb-6">Add a debt to start tracking your payoff progress.</p>
+          <p className="text-lg font-medium mb-2">Sin deudas activas</p>
+          <p className="text-sm mb-6">Agrega una deuda para comenzar a rastrear tu progreso.</p>
           <Link href="/app/debts/new">
-            <Button>Add your first debt</Button>
+            <Button>Agregar primera deuda</Button>
           </Link>
         </div>
       ) : (
@@ -91,13 +91,13 @@ export default async function DebtsPage() {
           {/* Summary */}
           <div className="grid grid-cols-2 gap-3 mb-8">
             <div className="rounded-lg border border-foreground/10 p-4">
-              <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">Total Debt</p>
+              <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">Total deuda</p>
               <p className="text-xl font-semibold text-red-400">
                 {formatMoney(totalDebt, currency)}
               </p>
             </div>
             <div className="rounded-lg border border-foreground/10 p-4">
-              <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">Min. Monthly Payments</p>
+              <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">Pagos mínimos</p>
               <p className="text-xl font-semibold">{formatMoney(totalMinPayments, currency)}</p>
             </div>
           </div>
@@ -143,13 +143,13 @@ export default async function DebtsPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-sm text-foreground/50">
-                    <span>Min: {formatMoney(Number(debt.minimum_payment), debt.currency)}/mo</span>
+                    <span>Mín: {formatMoney(Number(debt.minimum_payment), debt.currency)}/mes</span>
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/app/debts/${debt.id}`}
                         className="hover:text-foreground transition-colors"
                       >
-                        Details →
+                        Detalles →
                       </Link>
                       <CloseDebtButton id={debt.id} name={debt.name} />
                     </div>
@@ -161,9 +161,9 @@ export default async function DebtsPage() {
 
           {/* Strategy simulator */}
           <div className="rounded-lg border border-foreground/10 p-6">
-            <h2 className="text-base font-semibold mb-1">Payoff Strategy Simulator</h2>
+            <h2 className="text-base font-semibold mb-1">Simulador de estrategia</h2>
             <p className="text-sm text-foreground/50 mb-6">
-              Compare Avalanche vs. Snowball and find your optimal payoff plan.
+              Compara Avalancha vs. Bola de nieve y encuentra tu plan óptimo.
             </p>
             <StrategySimulator debts={coreDebts} currency={currency} />
           </div>

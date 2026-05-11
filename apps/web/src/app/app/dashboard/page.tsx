@@ -18,6 +18,20 @@ interface RecentTx {
   category: { name: string; color: string | null } | null;
 }
 
+interface AccountRow {
+  type: string;
+  current_balance: string;
+}
+
+interface RecurringRow {
+  id: string;
+  name: string;
+  amount: string;
+  currency: string;
+  next_date: string;
+  frequency: string;
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -35,8 +49,19 @@ export default async function DashboardPage() {
   const monthEnd = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0))
     .toISOString()
     .split("T")[0];
+  const sevenDaysLater = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 7))
+    .toISOString()
+    .split("T")[0];
+  const todayStr = today.toISOString().split("T")[0];
 
-  const [{ data: profile }, { data: txThisMonth }, { data: recent }] = await Promise.all([
+  // Get household membership for accounts/recurring queries
+  const { data: membership } = await supabase
+    .from("household_members")
+    .select("household_id")
+    .eq("user_id", user.id)
+    .single();
+
+  const [{ data: profile }, { data: txThisMonth }, { data: recent }, { data: accounts }, { data: upcoming }] = await Promise.all([
     supabase
       .from("users")
       .select("full_name, base_currency, locale")
@@ -59,6 +84,25 @@ export default async function DashboardPage() {
       .order("created_at", { ascending: false })
       .limit(5)
       .returns<RecentTx[]>(),
+    membership
+      ? supabase
+          .from("accounts")
+          .select("type, current_balance")
+          .eq("household_id", membership.household_id)
+          .eq("is_active", true)
+          .returns<AccountRow[]>()
+      : Promise.resolve({ data: null, error: null }),
+    membership
+      ? supabase
+          .from("recurring_payments")
+          .select("id, name, amount, currency, next_date, frequency")
+          .eq("household_id", membership.household_id)
+          .eq("is_active", true)
+          .gte("next_date", todayStr)
+          .lte("next_date", sevenDaysLater)
+          .order("next_date", { ascending: true })
+          .returns<RecurringRow[]>()
+      : Promise.resolve({ data: null, error: null }),
   ]);
 
   const baseCurrency = profile?.base_currency ?? "USD";
@@ -80,6 +124,16 @@ export default async function DashboardPage() {
 
   const remaining = monthlyIncome - monthlyExpenses;
 
+  // Net worth = non-credit assets - credit card balances
+  const totalAssets = (accounts ?? [])
+    .filter((a) => a.type !== "credit_card")
+    .reduce((s, a) => s + Number(a.current_balance), 0);
+  const totalCreditDebt = (accounts ?? [])
+    .filter((a) => a.type === "credit_card")
+    .reduce((s, a) => s + Number(a.current_balance), 0);
+  const netWorth = totalAssets - totalCreditDebt;
+  const hasAccounts = (accounts ?? []).length > 0;
+
   return (
     <main className="flex-1 px-8 py-10">
       <div className="max-w-5xl mx-auto">
@@ -87,33 +141,38 @@ export default async function DashboardPage() {
           {t("welcome", { name: fullName })}
         </h1>
         <p className="text-foreground/60 mb-10">
-          Your finances at a glance — current month in {baseCurrency}.
+          {t("subtitle", { currency: baseCurrency })}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           <SummaryCard title={t("monthlyIncome")} value={formatMoney(monthlyIncome, baseCurrency)} accent="emerald" />
           <SummaryCard title={t("monthlyExpenses")} value={formatMoney(monthlyExpenses, baseCurrency)} accent="red" />
           <SummaryCard title={t("remaining")} value={formatMoney(remaining, baseCurrency)} accent={remaining >= 0 ? "emerald" : "red"} />
-          <SummaryCard title={t("netWorth")} value="—" hint="Connect accounts soon" />
+          <SummaryCard
+            title={t("netWorth")}
+            value={hasAccounts ? formatMoney(netWorth, baseCurrency) : "—"}
+            accent={hasAccounts ? (netWorth >= 0 ? "emerald" : "red") : undefined}
+            hint={hasAccounts ? undefined : t("connectAccounts")}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">Recent activity</h2>
+              <h2 className="font-semibold">{t("recentActivity")}</h2>
               <Link href="/app/transactions">
                 <Button variant="ghost" size="sm">
-                  View all →
+                  {t("viewAll")} →
                 </Button>
               </Link>
             </div>
             {!recent || recent.length === 0 ? (
               <div className="py-12 text-center">
                 <p className="text-foreground/60 mb-4 text-sm">
-                  No activity yet. Start by recording a transaction.
+                  {t("noActivity")}
                 </p>
                 <Link href="/app/transactions/new">
-                  <Button>+ Add transaction</Button>
+                  <Button>+ {t("addTransaction")}</Button>
                 </Link>
               </div>
             ) : (
@@ -132,7 +191,7 @@ export default async function DashboardPage() {
                         )}
                         <div className="min-w-0">
                           <div className="text-sm font-medium truncate">
-                            {tx.category?.name ?? "Uncategorized"}
+                            {tx.category?.name ?? t("uncategorized")}
                           </div>
                           <div className="text-xs text-foreground/60 truncate">
                             {tx.description ?? formatDate(tx.date)}
@@ -150,19 +209,40 @@ export default async function DashboardPage() {
             )}
           </Card>
 
-          <Card className="p-6">
-            <h2 className="font-semibold mb-2">What&apos;s next</h2>
-            <p className="text-sm text-foreground/60 mb-4">
-              Set up the rest of your foundation:
-            </p>
-            <ul className="space-y-2 text-sm">
-              <ChecklistItem href="/app/transactions/new" label="Record a transaction" />
-              <ChecklistItem href="/app/budget" label="Review your budget" disabled />
-              <ChecklistItem href="/app/debts" label="Add your debts" disabled />
-              <ChecklistItem href="/app/investments" label="Track investments" disabled />
-              <ChecklistItem href="/app/advisor" label="Ask the AI advisor" disabled />
-            </ul>
-          </Card>
+          <div className="space-y-4">
+            {upcoming && upcoming.length > 0 && (
+              <Card className="p-6">
+                <h2 className="font-semibold mb-3">{t("upcomingPayments")}</h2>
+                <ul className="space-y-2">
+                  {upcoming.map((r) => (
+                    <li key={r.id} className="flex items-center justify-between text-sm">
+                      <div>
+                        <div className="font-medium">{r.name}</div>
+                        <div className="text-xs text-foreground/50">{formatDate(r.next_date)}</div>
+                      </div>
+                      <div className="font-medium tabular-nums text-foreground/80">
+                        {formatMoney(Number(r.amount), r.currency)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/app/accounts" className="block mt-3 text-xs text-foreground/40 hover:text-foreground">
+                  {t("managePayments")} →
+                </Link>
+              </Card>
+            )}
+
+            <Card className="p-6">
+              <h2 className="font-semibold mb-2">{t("quickActions")}</h2>
+              <ul className="space-y-2 text-sm">
+                <ChecklistItem href="/app/transactions/new" label={t("addTransaction")} />
+                <ChecklistItem href="/app/accounts" label={t("manageAccounts")} />
+                <ChecklistItem href="/app/debts" label={t("manageDebts")} />
+                <ChecklistItem href="/app/investments" label={t("trackInvestments")} />
+                <ChecklistItem href="/app/advisor" label={t("askAdvisor")} />
+              </ul>
+            </Card>
+          </div>
         </div>
       </div>
     </main>

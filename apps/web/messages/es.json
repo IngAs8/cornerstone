@@ -32,15 +32,39 @@
   },
   "dashboard": {
     "welcome": "Bienvenido de nuevo, {name}",
+    "subtitle": "Tus finanzas de un vistazo — mes actual en {currency}.",
     "netWorth": "Patrimonio neto",
     "monthlyIncome": "Ingresos mensuales",
     "monthlyExpenses": "Gastos mensuales",
-    "remaining": "Disponible"
+    "remaining": "Disponible",
+    "connectAccounts": "Conecta cuentas para ver tu patrimonio",
+    "recentActivity": "Actividad reciente",
+    "viewAll": "Ver todo",
+    "noActivity": "Sin actividad aún. Comienza registrando una transacción.",
+    "addTransaction": "Agregar transacción",
+    "uncategorized": "Sin categoría",
+    "upcomingPayments": "Próximos pagos",
+    "managePayments": "Administrar pagos",
+    "quickActions": "Acciones rápidas",
+    "manageAccounts": "Administrar cuentas",
+    "manageDebts": "Administrar deudas",
+    "trackInvestments": "Ver inversiones",
+    "askAdvisor": "Preguntar al asesor IA"
   },
   "marketing": {
     "ctaPrimary": "Comienza gratis",
     "ctaSecondary": "Ver cómo funciona",
     "heroTitle": "Toma el control de tu dinero",
     "heroSubtitle": "Presupuesto, eliminación de deudas, inversiones y un asesor IA que conoce tu contexto financiero completo."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "plan": "Plan actual",
+    "upgrade": "Mejorar plan",
+    "manageBilling": "Administrar facturación",
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "Vincula tu número para registrar gastos por mensaje.",
+    "currency": "Moneda base",
+    "language": "Idioma"
   }
 }

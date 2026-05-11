@@ -121,22 +121,22 @@ export default async function InvestmentsPage() {
     <main className="flex-1 px-8 py-10 max-w-3xl mx-auto w-full">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Investments</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Inversiones</h1>
           <p className="text-foreground/60 text-sm mt-0.5">
-            Track your portfolios and asset performance.
+            Rastrea tus portafolios y rendimiento de activos.
           </p>
         </div>
         <Link href="/app/investments/new">
-          <Button>+ New portfolio</Button>
+          <Button>+ Nuevo portafolio</Button>
         </Link>
       </div>
 
       {allPortfolios.length === 0 ? (
         <div className="text-center py-20 text-foreground/50">
-          <p className="text-lg font-medium mb-2">No portfolios yet</p>
-          <p className="text-sm mb-6">Create a portfolio to start tracking your investments.</p>
+          <p className="text-lg font-medium mb-2">Sin portafolios aún</p>
+          <p className="text-sm mb-6">Crea un portafolio para comenzar a rastrear tus inversiones.</p>
           <Link href="/app/investments/new">
-            <Button>Create your first portfolio</Button>
+            <Button>Crear primer portafolio</Button>
           </Link>
         </div>
       ) : (
@@ -144,7 +144,7 @@ export default async function InvestmentsPage() {
           {/* Summary */}
           <div className="grid grid-cols-2 gap-3 mb-8">
             <div className="rounded-lg border border-foreground/10 p-4">
-              <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">Total Value</p>
+              <p className="text-xs uppercase tracking-widest text-foreground/40 mb-1">Valor total</p>
               <p className="text-xl font-semibold">{formatMoney(grandTotal, currency)}</p>
             </div>
             <div className="rounded-lg border border-foreground/10 p-4">
@@ -170,7 +170,7 @@ export default async function InvestmentsPage() {
                       <p className="text-sm text-foreground/50 mt-0.5">{portfolio.description}</p>
                     )}
                     <p className="text-xs text-foreground/40 mt-1">
-                      {assetCount} {assetCount === 1 ? "asset" : "assets"}
+                      {assetCount} {assetCount === 1 ? "activo" : "activos"}
                     </p>
                   </div>
                   <div className="text-right">

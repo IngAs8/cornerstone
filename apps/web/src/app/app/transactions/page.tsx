@@ -50,13 +50,13 @@ export default async function TransactionsPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Transactions</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">Transacciones</h1>
             <p className="text-foreground/60 mt-1">
-              Track every income and expense, in any currency.
+              Registra cada ingreso y gasto, en cualquier moneda.
             </p>
           </div>
           <Link href="/app/transactions/new">
-            <Button>+ New transaction</Button>
+            <Button>+ Nueva transacción</Button>
           </Link>
         </div>
 
@@ -67,10 +67,10 @@ export default async function TransactionsPage() {
             <table className="w-full text-sm">
               <thead className="bg-foreground/[0.02] text-left text-xs uppercase tracking-wider text-foreground/50">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Date</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium">Description</th>
-                  <th className="px-4 py-3 font-medium text-right">Amount</th>
+                  <th className="px-4 py-3 font-medium">Fecha</th>
+                  <th className="px-4 py-3 font-medium">Categoría</th>
+                  <th className="px-4 py-3 font-medium">Descripción</th>
+                  <th className="px-4 py-3 font-medium text-right">Monto</th>
                   <th className="px-4 py-3 font-medium" />
                 </tr>
               </thead>
@@ -127,7 +127,7 @@ export default async function TransactionsPage() {
                           href={`/app/transactions/${tx.id}/edit`}
                           className="text-foreground/60 hover:text-foreground text-xs px-2 py-1 rounded hover:bg-foreground/5"
                         >
-                          Edit
+                          Editar
                         </Link>
                         <DeleteTransactionButton id={tx.id} />
                       </td>
@@ -146,12 +146,12 @@ export default async function TransactionsPage() {
 function EmptyState() {
   return (
     <div className="rounded-lg border border-dashed border-foreground/15 p-12 text-center">
-      <h3 className="font-medium mb-1">No transactions yet</h3>
+      <h3 className="font-medium mb-1">Sin transacciones aún</h3>
       <p className="text-sm text-foreground/60 mb-6">
-        Record your first income or expense to start tracking.
+        Registra tu primer ingreso o gasto para comenzar.
       </p>
       <Link href="/app/transactions/new">
-        <Button>+ Add your first transaction</Button>
+        <Button>+ Agregar primera transacción</Button>
       </Link>
     </div>
   );

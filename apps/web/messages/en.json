@@ -32,15 +32,39 @@
   },
   "dashboard": {
     "welcome": "Welcome back, {name}",
+    "subtitle": "Your finances at a glance — current month in {currency}.",
     "netWorth": "Net Worth",
     "monthlyIncome": "Monthly Income",
     "monthlyExpenses": "Monthly Expenses",
-    "remaining": "Remaining"
+    "remaining": "Remaining",
+    "connectAccounts": "Connect accounts to see net worth",
+    "recentActivity": "Recent activity",
+    "viewAll": "View all",
+    "noActivity": "No activity yet. Start by recording a transaction.",
+    "addTransaction": "Add transaction",
+    "uncategorized": "Uncategorized",
+    "upcomingPayments": "Upcoming payments",
+    "managePayments": "Manage payments",
+    "quickActions": "Quick actions",
+    "manageAccounts": "Manage accounts",
+    "manageDebts": "Manage debts",
+    "trackInvestments": "Track investments",
+    "askAdvisor": "Ask the AI advisor"
   },
   "marketing": {
     "ctaPrimary": "Start Free",
     "ctaSecondary": "See How It Works",
     "heroTitle": "Take Control of Your Money",
     "heroSubtitle": "Budget, eliminate debt, manage investments, and get real financial advice from an AI that knows your full context."
+  },
+  "settings": {
+    "title": "Settings",
+    "plan": "Current Plan",
+    "upgrade": "Upgrade Plan",
+    "manageBilling": "Manage Billing",
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "Link your number to record expenses by message.",
+    "currency": "Base Currency",
+    "language": "Language"
   }
 }
