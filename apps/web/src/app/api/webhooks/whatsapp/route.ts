@@ -87,8 +87,9 @@ export async function POST(req: NextRequest) {
   try {
     parsed = await parseExpenseWithClaude(text, user.base_currency ?? "USD", categoryList);
   } catch (err) {
-    console.error("[WhatsApp] Claude parse error:", err);
-    await sendWhatsAppMessage(fromNumber, "No pude entender ese mensaje. Intenta con: \"Gasté $12 en almuerzo\"");
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[WhatsApp] Claude parse error:", msg);
+    await sendWhatsAppMessage(fromNumber, `Error al procesar: ${msg.slice(0, 200)}`);
     return NextResponse.json({ ok: true });
   }
 
