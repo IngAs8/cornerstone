@@ -25,8 +25,19 @@ export async function createCheckoutUrl(params: {
       custom_data: params.customData,
     }),
   });
-  const json = await res.json() as { data: { checkout: { url: string } } };
-  return json.data.checkout.url;
+  const json = await res.json() as {
+    data?: { checkout?: { url?: string } };
+    error?: { type: string; code: string; detail: string };
+  };
+
+  if (!res.ok || json.error) {
+    throw new Error(`Paddle error: ${json.error?.detail ?? JSON.stringify(json)}`);
+  }
+
+  const url = json.data?.checkout?.url;
+  if (!url) throw new Error(`Paddle no devolvió URL de checkout. Respuesta: ${JSON.stringify(json)}`);
+
+  return url;
 }
 
 export async function createPortalUrl(customerId: string): Promise<string> {

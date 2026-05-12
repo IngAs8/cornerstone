@@ -35,6 +35,9 @@ importers:
       '@cornerstone/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@paddle/paddle-js':
+        specifier: ^1.6.4
+        version: 1.6.4
       '@paddle/paddle-node-sdk':
         specifier: ^1.7.0
         version: 1.10.0
@@ -1145,6 +1148,9 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
+
+  '@paddle/paddle-js@1.6.4':
+    resolution: {integrity: sha512-ncfnS6I8mCX6krZ3Sgz2iAYivGmhdI81yt9mT6prtPj4Ipd9J3M12LCJRUFL4FB7BYeeuV04c33RSEnbZUBCaA==}
 
   '@paddle/paddle-node-sdk@1.10.0':
     resolution: {integrity: sha512-7HEl8UmPbICxTyGx/z6ZOss71K/GTS1EnEJ324IQWIo0ijTw6m9z+QpD8Tpje+08TDi0aesbBTtZq4X4HTFVkw==}
@@ -4199,6 +4205,8 @@ snapshots:
       fastq: 1.20.1
 
   '@nolyfill/is-core-module@1.0.39': {}
+
+  '@paddle/paddle-js@1.6.4': {}
 
   '@paddle/paddle-node-sdk@1.10.0':
     dependencies:

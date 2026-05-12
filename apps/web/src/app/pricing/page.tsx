@@ -8,6 +8,7 @@ export default async function PricingPage() {
   const { data: { user } } = await supabase.auth.getUser();
 
   let currentPlan = "free";
+  let householdId: string | undefined;
   if (user) {
     const { data: membership } = await supabase
       .from("household_members")
@@ -15,6 +16,7 @@ export default async function PricingPage() {
       .eq("user_id", user.id)
       .single();
     if (membership) {
+      householdId = membership.household_id;
       const { data: household } = await supabase
         .from("households")
         .select("subscription_plan")
@@ -113,7 +115,14 @@ export default async function PricingPage() {
                     </Link>
                   )
                 ) : (
-                  <PlanCheckoutButton planKey={plan.key as "personal" | "family_s" | "family_m"} isLoggedIn={!!user} />
+                  <PlanCheckoutButton
+                    planKey={plan.key as "personal" | "family_s" | "family_m"}
+                    priceId={plan.paddlePriceIdMonthly ?? null}
+                    isLoggedIn={!!user}
+                    userId={user?.id}
+                    userEmail={user?.email ?? undefined}
+                    householdId={householdId}
+                  />
                 )}
               </div>
             );
