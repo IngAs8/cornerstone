@@ -1,3 +1,5 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+
 export { PLANS, getPlanByPriceId, formatPrice } from "./plans";
 export type { PlanKey } from "./plans";
 
@@ -50,6 +52,9 @@ export async function createPortalUrl(customerId: string): Promise<string> {
   return json.data.urls.general.overview;
 }
 
+// Reject signatures older than this many seconds (replay protection).
+const PADDLE_SIGNATURE_TOLERANCE_SEC = 5 * 60;
+
 export function verifyPaddleWebhook(
   rawBody: string,
   signature: string,
@@ -63,10 +68,23 @@ export function verifyPaddleWebhook(
   const h1 = parts["h1"];
   if (!ts || !h1) return false;
 
-  const { createHmac } = require("node:crypto") as typeof import("node:crypto");
+  // Replay protection: reject stale timestamps.
+  const tsNum = Number(ts);
+  if (!Number.isFinite(tsNum)) return false;
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (Math.abs(nowSec - tsNum) > PADDLE_SIGNATURE_TOLERANCE_SEC) return false;
+
   const expected = createHmac("sha256", secret)
     .update(`${ts}:${rawBody}`)
     .digest("hex");
 
-  return expected === h1;
+  // Constant-time comparison to prevent timing attacks.
+  try {
+    const a = Buffer.from(h1, "hex");
+    const b = Buffer.from(expected, "hex");
+    if (a.length !== b.length) return false;
+    return timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
 }

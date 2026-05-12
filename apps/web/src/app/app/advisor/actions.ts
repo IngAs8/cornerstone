@@ -50,6 +50,7 @@ export async function getUsage(): Promise<{ used: number; limit: number }> {
 
 export async function askAdvisor(question: string) {
   if (!question?.trim()) return { error: "Escribe una pregunta" };
+  if (question.length > 1000) return { error: "Pregunta demasiado larga (máx. 1000 caracteres)" };
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return { error: "Servicio de IA no configurado" };
@@ -58,7 +59,19 @@ export async function askAdvisor(question: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Check usage limit
+  // Per-user rate limit: max 5 questions per minute
+  const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+  const { count: recentCount } = await supabase
+    .from("ai_conversations")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", oneMinuteAgo);
+
+  if ((recentCount ?? 0) >= 5) {
+    return { error: "Vas muy rápido. Espera un momento antes de hacer otra pregunta." };
+  }
+
+  // Check monthly usage limit
   const { used, limit } = await getUsage();
   if (used >= limit) {
     return { error: `Alcanzaste el límite de ${limit} consultas este mes. Actualiza tu plan para más.` };
