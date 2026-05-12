@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { createBillingPortalSession } from "./stripe-actions";
+import { createBillingPortalSession } from "./paddle-actions";
 
 export function BillingButton() {
   const [isPending, startTransition] = useTransition();

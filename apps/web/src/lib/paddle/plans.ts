@@ -11,8 +11,8 @@ export const PLANS = {
       "Presupuesto básico",
       "Deudas ilimitadas",
     ],
-    stripePriceIdMonthly: null as string | null,
-    stripePriceIdYearly: null as string | null,
+    paddlePriceIdMonthly: null as string | null,
+    paddlePriceIdYearly: null as string | null,
   },
   personal: {
     key: "personal",
@@ -28,8 +28,8 @@ export const PLANS = {
       "Portafolio de inversiones",
       "Cuentas bancarias",
     ],
-    stripePriceIdMonthly: process.env.STRIPE_PERSONAL_MONTHLY_PRICE_ID ?? null,
-    stripePriceIdYearly: process.env.STRIPE_PERSONAL_YEARLY_PRICE_ID ?? null,
+    paddlePriceIdMonthly: process.env.PADDLE_PERSONAL_MONTHLY_PRICE_ID ?? null,
+    paddlePriceIdYearly: process.env.PADDLE_PERSONAL_YEARLY_PRICE_ID ?? null,
   },
   family_s: {
     key: "family_s",
@@ -45,25 +45,25 @@ export const PLANS = {
       "Portafolio de inversiones",
       "Todo lo de Personal",
     ],
-    stripePriceIdMonthly: process.env.STRIPE_FAMILY_S_MONTHLY_PRICE_ID ?? null,
-    stripePriceIdYearly: process.env.STRIPE_FAMILY_S_YEARLY_PRICE_ID ?? null,
+    paddlePriceIdMonthly: process.env.PADDLE_FAMILY_S_MONTHLY_PRICE_ID ?? null,
+    paddlePriceIdYearly: process.env.PADDLE_FAMILY_S_YEARLY_PRICE_ID ?? null,
   },
   family_m: {
     key: "family_m",
     name: "Familiar M",
     priceMonthly: 1699,
     priceYearly: 15599,
-    maxMembers: 3,
+    maxMembers: 4,
     features: [
-      "3 usuarios",
+      "4 usuarios",
       "Dashboard compartido",
       "Bot de WhatsApp para todos",
       "Asesor IA (BYOK)",
       "Portafolio de inversiones",
       "Todo lo de Familiar S",
     ],
-    stripePriceIdMonthly: process.env.STRIPE_FAMILY_M_MONTHLY_PRICE_ID ?? null,
-    stripePriceIdYearly: process.env.STRIPE_FAMILY_M_YEARLY_PRICE_ID ?? null,
+    paddlePriceIdMonthly: process.env.PADDLE_FAMILY_M_MONTHLY_PRICE_ID ?? null,
+    paddlePriceIdYearly: process.env.PADDLE_FAMILY_M_YEARLY_PRICE_ID ?? null,
   },
 } as const;
 
@@ -71,11 +71,11 @@ export type PlanKey = keyof typeof PLANS;
 
 export function getPlanByPriceId(priceId: string): PlanKey | null {
   for (const [key, plan] of Object.entries(PLANS)) {
-    if (
-      plan.stripePriceIdMonthly === priceId ||
-      plan.stripePriceIdYearly === priceId
-    ) {
-      return key as PlanKey;
+    if ("paddlePriceIdMonthly" in plan) {
+      const p = plan as { paddlePriceIdMonthly: string | null; paddlePriceIdYearly: string | null };
+      if (p.paddlePriceIdMonthly === priceId || p.paddlePriceIdYearly === priceId) {
+        return key as PlanKey;
+      }
     }
   }
   return null;

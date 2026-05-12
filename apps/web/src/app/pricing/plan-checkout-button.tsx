@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { createCheckoutSession } from "@/app/app/settings/stripe-actions";
+import { createCheckoutSession } from "@/app/app/settings/paddle-actions";
 
 type PaidPlan = "personal" | "family_s" | "family_m";
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { PLANS, formatPrice } from "@/lib/stripe/plans";
+import { PLANS, formatPrice } from "@/lib/paddle/plans";
 import { PlanCheckoutButton } from "./plan-checkout-button";
 
 export default async function PricingPage() {

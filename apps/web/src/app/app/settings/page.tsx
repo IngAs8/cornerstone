@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { WhatsAppForm } from "./whatsapp-form";
 import { BillingButton } from "./billing-button";
-import { PLANS } from "@/lib/stripe/plans";
+import { PLANS } from "@/lib/paddle/plans";
 
 const PLAN_LABEL: Record<string, string> = {
   free: "Gratis",
@@ -41,7 +41,7 @@ export default async function SettingsPage() {
   }
 
   const isOwner = membership?.role === "owner";
-  const hasStripe = !!profile?.stripe_customer_id;
+  const hasPaddle = !!profile?.stripe_customer_id; // column reused for Paddle customer ID
 
   return (
     <main className="flex-1 px-8 py-10 max-w-2xl mx-auto w-full">
@@ -65,7 +65,7 @@ export default async function SettingsPage() {
               Mejorar plan
             </Link>
           )}
-          {isOwner && currentPlan !== "free" && hasStripe && (
+          {isOwner && currentPlan !== "free" && hasPaddle && (
             <BillingButton />
           )}
         </div>

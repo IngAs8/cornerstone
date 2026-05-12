@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { PLANS, formatPrice } from "@/lib/stripe/plans";
+import { PLANS, formatPrice } from "@/lib/paddle/plans";
 
 const FEATURES = [
   {
