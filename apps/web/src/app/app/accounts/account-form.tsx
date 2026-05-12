@@ -85,7 +85,7 @@ export function AccountForm({ baseCurrency, banks }: AccountFormProps) {
         </div>
       </div>
 
-      {banks.length > 0 && (
+      {banks.length > 0 && type !== "cash" && (
         <div>
           <Label htmlFor="bank">Banco (opcional)</Label>
           <Select id="bank" value={bankId} onChange={(e) => setBankId(e.target.value)}>
@@ -95,6 +95,11 @@ export function AccountForm({ baseCurrency, banks }: AccountFormProps) {
             ))}
           </Select>
         </div>
+      )}
+      {type === "cash" && (
+        <p className="text-xs text-foreground/40 bg-foreground/5 px-3 py-2 rounded-md">
+          Las cuentas de efectivo no necesitan banco — úsalas para dinero en mano, billetera o caja chica.
+        </p>
       )}
 
       <div className="grid grid-cols-2 gap-3">

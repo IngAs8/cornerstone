@@ -3,60 +3,78 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function saveApiKey(provider: string, apiKey: string) {
-  if (!apiKey?.trim()) return { error: "La clave no puede estar vacía" };
+const MONTHLY_LIMITS: Record<string, number> = {
+  free: 10,
+  personal: 50,
+  family_s: 100,
+  family_m: 100,
+};
 
+export async function getUsage(): Promise<{ used: number; limit: number }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return { used: 0, limit: 0 };
 
-  // Store key encrypted via Supabase (stored as-is for now; production should use vault)
-  const { error } = await supabase
-    .from("users")
-    .update({
-      ai_provider: provider,
-      ai_api_key_encrypted: apiKey.trim(),
-    })
-    .eq("id", user.id);
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
 
-  if (error) return { error: error.message };
-  revalidatePath("/app/advisor");
-  return { ok: true };
-}
+  const [{ count }, { data: membership }] = await Promise.all([
+    supabase
+      .from("ai_conversations")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", monthStart.toISOString()),
+    supabase
+      .from("household_members")
+      .select("household_id")
+      .eq("user_id", user.id)
+      .single(),
+  ]);
 
-export async function removeApiKey() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  let plan = "free";
+  if (membership?.household_id) {
+    const { data: household } = await supabase
+      .from("households")
+      .select("subscription_plan")
+      .eq("id", membership.household_id)
+      .single();
+    plan = household?.subscription_plan ?? "free";
+  }
 
-  const { error } = await supabase
-    .from("users")
-    .update({ ai_provider: null, ai_api_key_encrypted: null })
-    .eq("id", user.id);
-
-  if (error) return { error: error.message };
-  revalidatePath("/app/advisor");
-  return { ok: true };
+  return {
+    used: count ?? 0,
+    limit: MONTHLY_LIMITS[plan] ?? 10,
+  };
 }
 
 export async function askAdvisor(question: string) {
   if (!question?.trim()) return { error: "Escribe una pregunta" };
 
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return { error: "Servicio de IA no configurado" };
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
+  // Check usage limit
+  const { used, limit } = await getUsage();
+  if (used >= limit) {
+    return { error: `Alcanzaste el límite de ${limit} consultas este mes. Actualiza tu plan para más.` };
+  }
+
   const { data: profile } = await supabase
     .from("users")
-    .select("ai_provider, ai_api_key_encrypted, base_currency")
+    .select("base_currency")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.ai_api_key_encrypted) return { error: "Configura tu clave de API primero" };
-
-  // Fetch financial context
   const { data: membership } = await supabase
-    .from("household_members").select("household_id").eq("user_id", user.id).single();
+    .from("household_members")
+    .select("household_id")
+    .eq("user_id", user.id)
+    .single();
 
   const today = new Date();
   const monthStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)).toISOString().slice(0, 10);
@@ -87,7 +105,7 @@ export async function askAdvisor(question: string) {
   const expenses = (txMonth ?? []).filter((t) => t.type === "expense").reduce((s, t) => s + Number(t.amount_base), 0);
 
   const context = `
-Moneda base: ${profile.base_currency ?? "USD"}
+Moneda base: ${profile?.base_currency ?? "USD"}
 Mes actual — Ingresos: ${income.toFixed(2)}, Gastos: ${expenses.toFixed(2)}
 Deudas activas: ${(debts ?? []).map((d) => `${d.name} (saldo: ${d.current_balance} ${d.currency}, tasa: ${(Number(d.annual_rate) * 100).toFixed(1)}%)`).join("; ") || "ninguna"}
 Cuentas: ${(accounts ?? []).map((a) => `${a.name} (${a.type}: ${a.current_balance} ${a.currency})`).join("; ") || "ninguna"}
@@ -96,51 +114,42 @@ Cuentas: ${(accounts ?? []).map((a) => `${a.name} (${a.type}: ${a.current_balanc
   const systemPrompt = `Eres un asesor financiero personal experto. Responde en español, de forma concisa y práctica. Usa los datos financieros del usuario como contexto para dar consejos personalizados.\n\nDatos del usuario:\n${context}`;
 
   try {
-    // Support Anthropic and OpenAI
-    const provider = profile.ai_provider ?? "anthropic";
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{ role: "user", content: question }],
+      }),
+    });
 
-    if (provider === "anthropic") {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": profile.ai_api_key_encrypted,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 1024,
-          system: systemPrompt,
-          messages: [{ role: "user", content: question }],
-        }),
-      });
-      const data = await res.json() as { content?: { text: string }[]; error?: { message: string } };
-      if (data.error) return { error: data.error.message };
-      return { answer: data.content?.[0]?.text ?? "" };
-    }
+    const data = await res.json() as { content?: { text: string }[]; error?: { message: string } };
+    if (data.error) return { error: data.error.message };
 
-    if (provider === "openai") {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${profile.ai_api_key_encrypted}`,
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: question },
-          ],
-        }),
-      });
-      const data = await res.json() as { choices?: { message: { content: string } }[]; error?: { message: string } };
-      if (data.error) return { error: data.error.message };
-      return { answer: data.choices?.[0]?.message.content ?? "" };
-    }
+    const answer = data.content?.[0]?.text ?? "";
 
-    return { error: "Proveedor no soportado" };
+    // Save to ai_conversations for usage tracking
+    await supabase.from("ai_conversations").insert({
+      user_id: user.id,
+      title: question.slice(0, 80),
+      messages: [
+        { role: "user", content: question },
+        { role: "assistant", content: answer },
+      ],
+      input_tokens_total: 0,
+      output_tokens_total: 0,
+      cached_tokens_total: 0,
+    });
+
+    revalidatePath("/app/advisor");
+    return { answer, used: used + 1, limit };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Error al conectar con la API" };
+    return { error: err instanceof Error ? err.message : "Error al conectar con la IA" };
   }
 }
