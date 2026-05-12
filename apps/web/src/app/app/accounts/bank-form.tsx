@@ -44,13 +44,15 @@ export function BankForm({ onDone }: { onDone: () => void }) {
               key={c}
               type="button"
               onClick={() => setColor(c)}
-              className="w-6 h-6 rounded-full border-2 transition-all"
-              style={{
-                backgroundColor: c,
-                borderColor: color === c ? "white" : "transparent",
-                transform: color === c ? "scale(1.2)" : "scale(1)",
-              }}
-            />
+              className="w-7 h-7 rounded-full transition-all flex items-center justify-center"
+              style={{ backgroundColor: c, outline: color === c ? `3px solid ${c}` : "none", outlineOffset: "2px" }}
+            >
+              {color === c && (
+                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </button>
           ))}
         </div>
       </div>
